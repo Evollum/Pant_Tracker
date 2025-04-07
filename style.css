@@ -32,6 +32,7 @@ h1 {
   margin-bottom: 20px;
   background: linear-gradient(90deg, #ff6f61, #ffcc00);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   animation: bounce 2s infinite;
