@@ -202,6 +202,70 @@ function updateChart() {
   });
 }
 
+// Example for styling the "pantChart"
+const ctxPant = document.getElementById("pantChart").getContext("2d");
+const pantChart = new Chart(ctxPant, {
+  type: "bar",
+  data: {
+    labels: ["January", "February", "March", "April"], // Example labels
+    datasets: [
+      {
+        label: "Donations (NOK)",
+        data: [500, 700, 800, 600], // Example data
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          font: {
+            family: "Poppins",
+            size: 14,
+          },
+          color: "#333",
+        },
+      },
+      tooltip: {
+        backgroundColor: "#fff",
+        titleColor: "#333",
+        bodyColor: "#333",
+        borderColor: "#ccc",
+        borderWidth: 1,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          font: {
+            family: "Poppins",
+          },
+          color: "#333",
+        },
+      },
+      y: {
+        grid: {
+          color: "#eee",
+        },
+        ticks: {
+          font: {
+            family: "Poppins",
+          },
+          color: "#333",
+        },
+      },
+    },
+  },
+});
+
 function updateNonDonatedChart() {
   const nonDonatedTotals = {};
 
