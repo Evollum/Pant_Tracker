@@ -6,6 +6,11 @@ body {
   padding: 0;
 }
 
+body.dark-mode {
+  background-color: #333;
+  color: #fff;
+}
+
 .container {
   max-width: 800px;
   margin: 20px auto;
@@ -14,6 +19,11 @@ body {
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   animation: fadeIn 1s ease-in-out;
+}
+
+body.dark-mode .container {
+  background: #444;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes fadeIn {
@@ -92,6 +102,10 @@ form button {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+body.dark-mode button {
+  background: linear-gradient(90deg, #ffcc00, #ff6f61);
+}
+
 form button:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -132,6 +146,20 @@ footer {
   color: white;
   font-size: 14px;
   border-radius: 10px;
+}
+
+.summary {
+  background: #fffbf2;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.summary p {
+  font-size: 1.2rem;
+  margin: 5px 0;
 }
 
 @media (max-width: 600px) {

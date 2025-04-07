@@ -595,4 +595,31 @@ function deleteEntry(index) {
   updateUI();
 }
 
+function exportToCSV(entries, filename) {
+  const csvContent = entries
+    .map(
+      (entry) =>
+        `${entry.date},${entry.quantity},${entry.typeLabel},${entry.total},${
+          entry.isLottery ? entry.lotteryAmount : 0
+        }`
+    )
+    .join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+// Example usage:
+document.getElementById("export-donated").addEventListener("click", () => {
+  const donatedEntries = entries.filter((entry) => entry.isDonated);
+  exportToCSV(donatedEntries, "donated_entries.csv");
+});
+
+document.getElementById("dark-mode-toggle").addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+});
+
 updateUI(); // Run on page load
