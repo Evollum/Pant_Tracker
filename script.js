@@ -14,6 +14,22 @@ const pantValues = {
   tiny: 1, // New pant type
 };
 
+function calculateDonation() {
+  const tiny = parseInt(document.getElementById("quantity-tiny").value) || 0;
+  const small = parseInt(document.getElementById("quantity-small").value) || 0;
+  const large = parseInt(document.getElementById("quantity-large").value) || 0;
+  return tiny * 1 + small * 2 + large * 3;
+}
+
+function calculateNonDonated() {
+  const tiny = parseInt(document.getElementById("non-donated-tiny").value) || 0;
+  const small =
+    parseInt(document.getElementById("non-donated-small").value) || 0;
+  const large =
+    parseInt(document.getElementById("non-donated-large").value) || 0;
+  return tiny * 1 + small * 2 + large * 3;
+}
+
 function updateUI() {
   console.log("updateUI called");
   console.log("Entries:", entries);
@@ -82,7 +98,7 @@ function updateUI() {
   totalDisplay.innerText = totalDonated.toFixed(2);
   document.getElementById("lottery-total").innerText =
     totalLotteryEarnings.toFixed(2);
-  ß;
+
   // Update the charts
   updateChart();
   updateNonDonatedChart();
@@ -202,68 +218,92 @@ function updateChart() {
   });
 }
 
-// Example for styling the "pantChart"
-const ctxPant = document.getElementById("pantChart").getContext("2d");
-const pantChart = new Chart(ctxPant, {
-  type: "bar",
-  data: {
-    labels: ["January", "February", "March", "April"], // Example labels
-    datasets: [
-      {
-        label: "Donations (NOK)",
-        data: [500, 700, 800, 600], // Example data
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        labels: {
-          font: {
-            family: "Poppins",
-            size: 14,
+// Example for dynamically updating the donation chart
+const donationData = []; // Array to store donation data
+const donationLabels = []; // Array to store labels (e.g., months)
+
+// Function to update the donation chart
+function updateDonationChart() {
+  const ctxPant = document.getElementById("pantChart").getContext("2d");
+  new Chart(ctxPant, {
+    type: "bar",
+    data: {
+      labels: donationLabels, // Use dynamic labels
+      datasets: [
+        {
+          label: "Donations (NOK)",
+          data: donationData, // Use dynamic data
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            font: {
+              family: "Poppins",
+              size: 14,
+            },
+            color: "#333",
           },
-          color: "#333",
+        },
+        tooltip: {
+          backgroundColor: "#fff",
+          titleColor: "#333",
+          bodyColor: "#333",
+          borderColor: "#ccc",
+          borderWidth: 1,
         },
       },
-      tooltip: {
-        backgroundColor: "#fff",
-        titleColor: "#333",
-        bodyColor: "#333",
-        borderColor: "#ccc",
-        borderWidth: 1,
+      scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            font: {
+              family: "Poppins",
+            },
+            color: "#333",
+          },
+        },
+        y: {
+          grid: {
+            color: "#eee",
+          },
+          ticks: {
+            font: {
+              family: "Poppins",
+            },
+            color: "#333",
+          },
+        },
       },
     },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          font: {
-            family: "Poppins",
-          },
-          color: "#333",
-        },
-      },
-      y: {
-        grid: {
-          color: "#eee",
-        },
-        ticks: {
-          font: {
-            family: "Poppins",
-          },
-          color: "#333",
-        },
-      },
-    },
-  },
+  });
+}
+
+// Example: Add data dynamically when a new entry is added
+document.getElementById("pant-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const date = document.getElementById("entry-date").value;
+  const totalDonation = calculateDonation(); // Function to calculate total donation
+  const month = new Date(date).toLocaleString("default", { month: "long" });
+
+  if (!donationLabels.includes(month)) {
+    donationLabels.push(month);
+    donationData.push(totalDonation);
+  } else {
+    const index = donationLabels.indexOf(month);
+    donationData[index] += totalDonation;
+  }
+
+  updateDonationChart();
 });
 
 function updateNonDonatedChart() {
