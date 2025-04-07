@@ -106,6 +106,13 @@ body.dark-mode button {
   background: linear-gradient(90deg, #ffcc00, #ff6f61);
 }
 
+body.dark-mode input,
+body.dark-mode select {
+  background-color: #555;
+  color: #fff;
+  border: 1px solid #777;
+}
+
 form button:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
