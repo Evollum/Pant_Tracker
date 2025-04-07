@@ -4,7 +4,10 @@ const quantityInput = document.getElementById("quantity");
 const entryList = document.getElementById("entry-list");
 const totalDisplay = document.getElementById("total");
 
+// Initialize entries and chart data from localStorage or as empty arrays
 let entries = JSON.parse(localStorage.getItem("pantEntries")) || [];
+let donationLabels = JSON.parse(localStorage.getItem("donationLabels")) || [];
+let donationData = JSON.parse(localStorage.getItem("donationData")) || [];
 
 const pantValues = {
   small: 2,
@@ -15,6 +18,12 @@ const pantValues = {
 // Save entries to localStorage
 function saveEntries() {
   localStorage.setItem("pantEntries", JSON.stringify(entries));
+}
+
+// Save chart data to localStorage
+function saveChartData() {
+  localStorage.setItem("donationLabels", JSON.stringify(donationLabels));
+  localStorage.setItem("donationData", JSON.stringify(donationData));
 }
 
 // Update the UI and save entries
@@ -44,6 +53,34 @@ function updateUI() {
   saveEntries();
 }
 
+// Update the donation chart
+function updateDonationChart() {
+  const ctxPant = document.getElementById("pantChart").getContext("2d");
+  new Chart(ctxPant, {
+    type: "bar",
+    data: {
+      labels: donationLabels,
+      datasets: [
+        {
+          label: "Donations (NOK)",
+          data: donationData,
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
 // Add a new entry
 document.getElementById("pant-form").addEventListener("submit", (e) => {
   e.preventDefault();
@@ -67,11 +104,23 @@ document.getElementById("pant-form").addEventListener("submit", (e) => {
     isDonated: true,
   });
 
-  // Clear the form
-  document.getElementById("pant-form").reset();
+  // Update chart data
+  const month = new Date(date).toLocaleString("default", { month: "long" });
+  if (!donationLabels.includes(month)) {
+    donationLabels.push(month);
+    donationData.push(total);
+  } else {
+    const index = donationLabels.indexOf(month);
+    donationData[index] += total;
+  }
 
-  // Update the UI
+  // Save data to localStorage
+  saveEntries();
+  saveChartData();
+
+  // Update the UI and chart
   updateUI();
+  updateDonationChart();
 });
 
 // Check and apply dark mode state from localStorage
@@ -91,5 +140,6 @@ document.getElementById("dark-mode-toggle").addEventListener("click", () => {
   }
 });
 
-// Load the UI on page load
+// Load the UI and chart on page load
 updateUI();
+updateDonationChart();
