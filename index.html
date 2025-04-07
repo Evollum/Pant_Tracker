@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pant Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Pant Tracker</h1>
+      <form id="pant-form">
+        <label>Quantity for 1 NOK bottles:</label>
+        <input type="number" id="quantity-tiny" min="0" value="0" />
+
+        <label>Quantity for 2 NOK bottles:</label>
+        <input type="number" id="quantity-small" min="0" value="0" />
+
+        <label>Quantity for 3 NOK bottles:</label>
+        <input type="number" id="quantity-large" min="0" value="0" />
+
+        <label for="entry-date">Date:</label>
+        <input type="date" id="entry-date" required />
+
+        <label for="lottery">Add Røde Kors Lottery Winnings (optional):</label>
+        <input type="number" id="lottery" min="0" placeholder="Amount in NOK" />
+
+        <button type="submit">Add Entry</button>
+      </form>
+
+      <h2>Entries</h2>
+      <h2>Total Donated: <span id="total">0</span> NOK</h2>
+      <h2>Total Lottery Earnings: <span id="lottery-total">0</span> NOK</h2>
+
+      <label for="month-filter">Filter by Month:</label>
+      <input type="month" id="month-filter" />
+
+      <ul id="entry-list"></ul>
+
+      <h2>Monthly Overview (Røde Kors Donation)</h2>
+      <canvas id="pantChart" width="400" height="200"></canvas>
+
+      <h2>Overview of Non-Donated Pant</h2>
+      <canvas id="nonDonatedChart" width="400" height="200"></canvas>
+
+      <h2>Non-Donated Pant</h2>
+      <ul id="non-donated-list"></ul>
+      <h3>Total Non-Donated: <span id="non-donated-total">0</span> NOK</h3>
+
+      <h2>Record Non-Donated Pant</h2>
+      <form id="non-donated-form">
+        <label>Quantity for 1 NOK bottles:</label>
+        <input type="number" id="non-donated-tiny" min="0" value="0" />
+
+        <label>Quantity for 2 NOK bottles:</label>
+        <input type="number" id="non-donated-small" min="0" value="0" />
+
+        <label>Quantity for 3 NOK bottles:</label>
+        <input type="number" id="non-donated-large" min="0" value="0" />
+
+        <label for="non-donated-date">Date:</label>
+        <input type="date" id="non-donated-date" required />
+
+        <button type="submit">Add Non-Donated Entry</button>
+      </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
