@@ -69,17 +69,55 @@ function updateDonationChart() {
         {
           label: "Donations (NOK)",
           data: donationData,
-          backgroundColor: "rgba(75, 192, 192, 0.6)",
-          borderColor: "rgba(75, 192, 192, 1)",
+          backgroundColor: "rgba(255, 111, 97, 0.6)", // Coral red
+          borderColor: "rgba(255, 111, 97, 1)",
           borderWidth: 1,
+          borderRadius: 5, // Rounded bars
         },
       ],
     },
     options: {
       responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            font: {
+              family: "Poppins",
+              size: 14,
+            },
+            color: "#333333",
+          },
+        },
+        tooltip: {
+          backgroundColor: "#fff",
+          titleColor: "#333",
+          bodyColor: "#333",
+          borderColor: "#ccc",
+          borderWidth: 1,
+        },
+      },
       scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            font: {
+              family: "Poppins",
+            },
+            color: "#333333",
+          },
+        },
         y: {
-          beginAtZero: true,
+          grid: {
+            color: "#eee",
+          },
+          ticks: {
+            font: {
+              family: "Poppins",
+            },
+            color: "#333333",
+          },
         },
       },
     },

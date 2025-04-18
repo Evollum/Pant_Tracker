@@ -1,6 +1,6 @@
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #fef9ef;
+  background: linear-gradient(135deg, #fef9f3, #fff);
   color: #333333;
   margin: 0;
   padding: 0;
@@ -99,6 +99,7 @@ form button {
   border: none;
   cursor: pointer;
   padding: 10px;
+  border-radius: 5px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
