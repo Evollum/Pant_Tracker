@@ -104,28 +104,43 @@ function updateChartData() {
   nonDonationLabels = [];
   nonDonationData = [];
 
-  // Recalculate chart data from entries
+  // Create a Set to store all unique months
+  const allMonths = new Set();
+
+  // Collect all months from entries
+  entries.forEach((entry) => {
+    const month = new Date(entry.date).toLocaleString("default", {
+      month: "long",
+    });
+    allMonths.add(month);
+  });
+
+  // Sort months in chronological order
+  const sortedMonths = Array.from(allMonths).sort(
+    (a, b) =>
+      new Date(`1 ${a} 2023`).getMonth() - new Date(`1 ${b} 2023`).getMonth()
+  );
+
+  // Initialize donation and non-donation data for all months
+  sortedMonths.forEach((month) => {
+    donationLabels.push(month);
+    donationData.push(0); // Default to 0
+    nonDonationLabels.push(month);
+    nonDonationData.push(0); // Default to 0
+  });
+
+  // Populate data for each month
   entries.forEach((entry) => {
     const month = new Date(entry.date).toLocaleString("default", {
       month: "long",
     });
 
     if (entry.isDonated) {
-      if (!donationLabels.includes(month)) {
-        donationLabels.push(month);
-        donationData.push(entry.total);
-      } else {
-        const index = donationLabels.indexOf(month);
-        donationData[index] += entry.total;
-      }
+      const index = donationLabels.indexOf(month);
+      donationData[index] += entry.total;
     } else {
-      if (!nonDonationLabels.includes(month)) {
-        nonDonationLabels.push(month);
-        nonDonationData.push(entry.total);
-      } else {
-        const index = nonDonationLabels.indexOf(month);
-        nonDonationData[index] += entry.total;
-      }
+      const index = nonDonationLabels.indexOf(month);
+      nonDonationData[index] += entry.total;
     }
   });
 }
@@ -318,5 +333,6 @@ document.getElementById("dark-mode-toggle").addEventListener("click", () => {
 
 // Load the UI and charts on page load
 updateUI();
+updateChartData();
 updateDonationChart();
 updateNonDonationChart();
