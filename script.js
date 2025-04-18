@@ -37,6 +37,7 @@ function updateUI() {
   entryList.innerHTML = ""; // Clear the list
 
   let totalDonated = 0;
+  let totalNonDonated = 0;
   let totalLotteryEarnings = 0;
 
   entries.forEach((entry, index) => {
@@ -47,13 +48,7 @@ function updateUI() {
     // Create a delete button
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
-    deleteButton.style.marginLeft = "10px";
-    deleteButton.style.backgroundColor = "#ff6f61";
-    deleteButton.style.color = "white";
-    deleteButton.style.border = "none";
-    deleteButton.style.padding = "5px 10px";
-    deleteButton.style.borderRadius = "5px";
-    deleteButton.style.cursor = "pointer";
+    deleteButton.classList.add("delete");
 
     // Add delete functionality
     deleteButton.addEventListener("click", () => {
@@ -80,13 +75,22 @@ function updateUI() {
     entryList.appendChild(li);
 
     // Update totals
-    totalDonated += entry.isDonated ? entry.total : 0;
+    if (entry.isDonated) {
+      totalDonated += entry.total;
+    } else {
+      totalNonDonated += entry.total;
+    }
     totalLotteryEarnings += entry.isLottery ? entry.lotteryAmount : 0;
   });
 
-  // Update totals in the UI
-  document.getElementById("total").textContent = totalDonated;
-  document.getElementById("lottery-total").textContent = totalLotteryEarnings;
+  // Update totals in the summary section
+  document.getElementById("total-summary").textContent = totalDonated;
+  document.getElementById("non-donated-summary").textContent = totalNonDonated;
+  document.getElementById("lottery-summary").textContent = totalLotteryEarnings;
+
+  // Update the grand total (donated + non-donated)
+  const grandTotal = totalDonated + totalNonDonated;
+  document.getElementById("grand-total").textContent = grandTotal;
 
   // Save entries to localStorage
   saveEntries();
