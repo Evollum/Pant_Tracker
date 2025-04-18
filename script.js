@@ -92,6 +92,10 @@ function updateUI() {
   const grandTotal = totalDonated + totalNonDonated;
   document.getElementById("grand-total").textContent = grandTotal;
 
+  // Update the total in the donated and non-donated sections
+  document.getElementById("donated-total").textContent = totalDonated;
+  document.getElementById("non-donated-total").textContent = totalNonDonated;
+
   // Save entries to localStorage
   saveEntries();
 }
