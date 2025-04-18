@@ -43,6 +43,40 @@ function updateUI() {
     // Create a list item for each entry
     const li = document.createElement("li");
     li.textContent = `${entry.date}: ${entry.quantity} bottles (${entry.typeLabel}) - ${entry.total} NOK`;
+
+    // Create a delete button
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.style.marginLeft = "10px";
+    deleteButton.style.backgroundColor = "#ff6f61";
+    deleteButton.style.color = "white";
+    deleteButton.style.border = "none";
+    deleteButton.style.padding = "5px 10px";
+    deleteButton.style.borderRadius = "5px";
+    deleteButton.style.cursor = "pointer";
+
+    // Add delete functionality
+    deleteButton.addEventListener("click", () => {
+      // Remove the entry from the array
+      entries.splice(index, 1);
+
+      // Update the charts
+      updateChartData();
+
+      // Save the updated entries and chart data
+      saveEntries();
+      saveChartData();
+
+      // Update the UI
+      updateUI();
+      updateDonationChart();
+      updateNonDonationChart();
+    });
+
+    // Append the delete button to the list item
+    li.appendChild(deleteButton);
+
+    // Append the list item to the entry list
     entryList.appendChild(li);
 
     // Update totals
@@ -56,6 +90,40 @@ function updateUI() {
 
   // Save entries to localStorage
   saveEntries();
+}
+
+// Update chart data after deletion
+function updateChartData() {
+  // Reset chart data
+  donationLabels = [];
+  donationData = [];
+  nonDonationLabels = [];
+  nonDonationData = [];
+
+  // Recalculate chart data from entries
+  entries.forEach((entry) => {
+    const month = new Date(entry.date).toLocaleString("default", {
+      month: "long",
+    });
+
+    if (entry.isDonated) {
+      if (!donationLabels.includes(month)) {
+        donationLabels.push(month);
+        donationData.push(entry.total);
+      } else {
+        const index = donationLabels.indexOf(month);
+        donationData[index] += entry.total;
+      }
+    } else {
+      if (!nonDonationLabels.includes(month)) {
+        nonDonationLabels.push(month);
+        nonDonationData.push(entry.total);
+      } else {
+        const index = nonDonationLabels.indexOf(month);
+        nonDonationData[index] += entry.total;
+      }
+    }
+  });
 }
 
 // Update the donation chart
