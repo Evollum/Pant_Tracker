@@ -1,3 +1,21 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  push,
+  onValue,
+  remove,
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+const firebaseConfig = {
+  databaseURL: "https://pant-tracker-default-rtdb.firebaseio.com/",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const form = document.getElementById("pant-form");
 const itemType = document.getElementById("item-type");
 const quantityInput = document.getElementById("quantity");
@@ -5,7 +23,37 @@ const entryList = document.getElementById("entry-list");
 const totalDisplay = document.getElementById("total");
 
 // Initialize entries and chart data from localStorage or as empty arrays
-let entries = JSON.parse(localStorage.getItem("pantEntries")) || [];
+let entries = [];
+let donationChartInstance = null;
+let nonDonationChartInstance = null;
+
+function fetchEntries() {
+  const entriesRef = ref(db, "entries");
+  const chartDataRef = ref(db, "chartData");
+
+  // Fetch entries
+  onValue(entriesRef, (snapshot) => {
+    const data = snapshot.val();
+    entries = data ? Object.values(data) : [];
+    updateUI();
+  });
+
+  // Fetch chart data
+  onValue(chartDataRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      donationLabels = data.donationLabels || [];
+      donationData = data.donationData || [];
+      nonDonationLabels = data.nonDonationLabels || [];
+      nonDonationData = data.nonDonationData || [];
+      updateDonationChart();
+      updateNonDonationChart();
+    }
+  });
+}
+
+fetchEntries();
+
 let donationLabels = JSON.parse(localStorage.getItem("donationLabels")) || [];
 let donationData = JSON.parse(localStorage.getItem("donationData")) || [];
 let nonDonationLabels =
@@ -23,12 +71,15 @@ function saveEntries() {
   localStorage.setItem("pantEntries", JSON.stringify(entries));
 }
 
-// Save chart data to localStorage
+// Save chart data to Firebase
 function saveChartData() {
-  localStorage.setItem("donationLabels", JSON.stringify(donationLabels));
-  localStorage.setItem("donationData", JSON.stringify(donationData));
-  localStorage.setItem("nonDonationLabels", JSON.stringify(nonDonationLabels));
-  localStorage.setItem("nonDonationData", JSON.stringify(nonDonationData));
+  const chartDataRef = ref(db, "chartData");
+  set(chartDataRef, {
+    donationLabels,
+    donationData,
+    nonDonationLabels,
+    nonDonationData,
+  });
 }
 
 // Update the UI and save entries
@@ -52,18 +103,9 @@ function updateUI() {
 
     // Add delete functionality
     deleteButton.addEventListener("click", () => {
-      // Remove the entry from the array
-      entries.splice(index, 1);
-
-      // Update the charts
+      const entryId = entry.id; // Ensure each entry has a unique ID from Firebase
+      deleteEntry(entryId);
       updateChartData();
-
-      // Save the updated entries and chart data
-      saveEntries();
-      saveChartData();
-
-      // Update the UI
-      updateUI();
       updateDonationChart();
       updateNonDonationChart();
     });
@@ -147,12 +189,22 @@ function updateChartData() {
       nonDonationData[index] += entry.total;
     }
   });
+
+  // Save chart data to Firebase
+  saveChartData();
 }
 
 // Update the donation chart
 function updateDonationChart() {
   const ctxPant = document.getElementById("pantChart").getContext("2d");
-  new Chart(ctxPant, {
+
+  // Destroy the existing chart instance if it exists
+  if (donationChartInstance) {
+    donationChartInstance.destroy();
+  }
+
+  // Create a new chart instance
+  donationChartInstance = new Chart(ctxPant, {
     type: "bar",
     data: {
       labels: donationLabels,
@@ -220,7 +272,14 @@ function updateNonDonationChart() {
   const ctxNonDonated = document
     .getElementById("nonDonatedChart")
     .getContext("2d");
-  new Chart(ctxNonDonated, {
+
+  // Destroy the existing chart instance if it exists
+  if (nonDonationChartInstance) {
+    nonDonationChartInstance.destroy();
+  }
+
+  // Create a new chart instance
+  nonDonationChartInstance = new Chart(ctxNonDonated, {
     type: "bar",
     data: {
       labels: nonDonationLabels,
@@ -257,8 +316,7 @@ document.getElementById("pant-form").addEventListener("submit", (e) => {
 
   const total = tiny * 1 + small * 2 + large * 3;
 
-  // Add the new entry to the entries array
-  entries.push({
+  const newEntry = {
     date,
     quantity: tiny + small + large,
     typeLabel: "Donated",
@@ -266,26 +324,15 @@ document.getElementById("pant-form").addEventListener("submit", (e) => {
     isLottery: lottery > 0,
     lotteryAmount: lottery,
     isDonated: true,
-  });
+  };
 
-  // Update donation chart data
-  const month = new Date(date).toLocaleString("default", { month: "long" });
-  if (!donationLabels.includes(month)) {
-    donationLabels.push(month);
-    donationData.push(total);
-  } else {
-    const index = donationLabels.indexOf(month);
-    donationData[index] += total;
-  }
-
-  // Save data to localStorage
-  saveEntries();
-  saveChartData();
-
-  // Update the UI and charts
-  updateUI();
+  saveEntry(newEntry);
+  updateChartData();
   updateDonationChart();
   updateNonDonationChart();
+
+  // Clear the form
+  document.getElementById("pant-form").reset();
 });
 
 // Add a new non-donated entry
@@ -317,6 +364,19 @@ document.getElementById("non-donated-form").addEventListener("submit", (e) => {
   // Update the charts
   updateNonDonationChart();
 });
+
+// Save entry to the database
+async function saveEntry(entry) {
+  const entriesRef = ref(db, "entries");
+  const newEntryRef = push(entriesRef);
+  await set(newEntryRef, entry);
+}
+
+// Delete entry from the database
+async function deleteEntry(id) {
+  const entryRef = ref(db, `entries/${id}`);
+  await remove(entryRef);
+}
 
 // Check and apply dark mode state from localStorage
 if (localStorage.getItem("darkMode") === "enabled") {
